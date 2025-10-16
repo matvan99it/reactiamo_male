@@ -1,0 +1,9 @@
+# start container
+docker run -it --rm -v ${PWD}:/app -w /app -p 3000:3000 node:22-alpine sh
+
+
+npm install # se è la prima volta
+
+
+# per far partire
+npm start -- --host 0.0.0.0
