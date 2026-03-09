@@ -1,12 +1,7 @@
-# start container
-docker run -it --rm -v ${PWD}:/app -w /app -p 3000:3000 node:22-alpine sh
+docker compose up (-d per il detached) <- startup
 
+docker compose logs -f react <- solo vedere il log
 
-npm install # se è la prima volta
+docker compose exec react sh <- entrare nel container
 
-npm install
-npm run build
-npm start
-
-# per far partire
-npm start -- --port 0.0.0.0
+docker compose down <- una volta finito
