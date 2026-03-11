@@ -1,9 +1,9 @@
-docker compose up (-d per il detached) <- startup
+sudo docker compose up (-d per il detached) <- startup
 
-docker compose logs -f react <- solo vedere il log
+sudo docker compose logs -f react <- solo vedere il log
 
-docker compose exec react sh <- entrare nel container
+sudo docker compose exec react sh <- entrare nel container
 
-docker compose down <- una volta finito
+sudo docker compose down <- una volta finito
 
-docker run --rm -it -v ${PWD}/app:/app node:20-alpine sh <- generare un immagine temporanea per lavorare
+sudo docker run --rm -it -v ${PWD}/app:/app node:20-alpine sh <- generare un immagine temporanea per lavorare

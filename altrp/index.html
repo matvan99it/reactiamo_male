@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Elastic Stretch - Limited Rotation</title>
+    <style>
+        body { margin: 0; height: 100vh; background: #0e0e0e; display: flex; justify-content: center; align-items: center; overflow: hidden; touch-action: none; }
+        #canvas { position: relative; width: 100vw; height: 100vh; }
+        
+        #ball {
+            position: absolute;
+            top: 200px;
+            right: 200px;
+            width: 100px;
+            height: 100px;
+            background-color: #00d2ff;
+            border-radius: 50%;
+            cursor: grab;
+            /* Ancora spostata all'interno: 80% orizzontale, 20% verticale */
+            transform-origin: 80% 20%;
+            transition: transform 0.6s cubic-bezier(0.25, 1.5, 0.5, 1);
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
+        }
+
+        #ball.dragging { transition: none; }
+
+        /* Pallino rosso che indica l'ancora interna */
+        #anchor-visual {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ff0055;
+            border-radius: 50%;
+            z-index: 100;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div id="canvas">
+    <div id="anchor-visual"></div>
+    <div id="ball"></div>
+</div>
+
+<script>
+    const ball = document.getElementById('ball');
+    const visual = document.getElementById('anchor-visual');
+    let isDragging = false;
+
+    // Funzione per aggiornare la posizione del pallino rosso di debug
+    const updateVisualAnchor = () => {
+        const rect = ball.getBoundingClientRect();
+        // L'ancora è all'80% di larghezza e 20% di altezza del rettangolo
+        const x = rect.left + (rect.width * 0.8);
+        const y = rect.top + (rect.height * 0.2);
+        visual.style.left = (x - 4) + 'px';
+        visual.style.top = (y - 4) + 'px';
+        return { x, y };
+    };
+
+    updateVisualAnchor();
+
+    const handleMove = (mouseX, mouseY) => {
+        const anchor = updateVisualAnchor();
+        const dx = mouseX - anchor.x;
+        const dy = mouseY - anchor.y;
+
+        // 1. Calcolo Angolo con limite +-45 gradi
+        // Aggiungiamo Math.PI per l'inversione dell'asse transform-origin
+        let angleRad = Math.atan2(dy, dx) + Math.PI;
+        
+        // Convertiamo in gradi per applicare il limite più facilmente
+        let degrees = angleRad * (180 / Math.PI);
+        
+        // Normalizziamo l'angolo (per gestire il salto 180/-180)
+        if (degrees > 180) degrees -= 360;
+
+        // Limite +-45 gradi
+        const limitedDegrees = Math.max(-45, Math.min(45, degrees));
+        const finalRad = limitedDegrees * (Math.PI / 180);
+
+        // 2. Calcolo Stretch
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const stretch = 1 + Math.min(distance / 400, 1.5);
+        const squash = 1 - Math.min(distance / 800, 0.3);
+
+        ball.style.transform = `rotate(${finalRad}rad) scaleX(${stretch}) scaleY(${squash})`;
+    };
+
+    ball.addEventListener('mousedown', () => { isDragging = true; ball.classList.add('dragging'); });
+    window.addEventListener('mousemove', (e) => { if(isDragging) handleMove(e.clientX, e.clientY); });
+    window.addEventListener('mouseup', () => { 
+        isDragging = false; 
+        ball.classList.remove('dragging');
+        ball.style.transform = 'rotate(0deg) scale(1)';
+    });
+</script>
+</body>
+</html>
