@@ -5,3 +5,5 @@ docker compose logs -f react <- solo vedere il log
 docker compose exec react sh <- entrare nel container
 
 docker compose down <- una volta finito
+
+docker run --rm -it -v ${PWD}/app:/app node:20-alpine sh <- generare un immagine temporanea per lavorare
